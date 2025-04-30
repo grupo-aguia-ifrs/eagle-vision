@@ -44,7 +44,7 @@ $(document).ready(function() {
                     <td>${item.id}</td>
                     <td>${item.nome}</td>
                     <td class="icon-cell">
-                        <i class="fas fa-video icon camera ${item.status.camera ? 'active' : ''}"></i>
+                        <i class="fa-solid fa-camera icon camera ${item.status.camera ? 'active' : ''}"></i>
                         <i class="fas fa-bell icon alarm ${item.status.alarm ? 'active' : ''}"></i>
                     </td>
                 </tr>
@@ -106,6 +106,19 @@ $(document).ready(function() {
         $(this).toggleClass('active');
     });
 
-        
+    // Evento de clique no ícone do menu dentro do sidebar
+    $('.sidebar-toggle').on('click', function() {
+        $('.sidebar').addClass('hidden');
+        $('.menu-toggle').removeClass('hidden');
+        $('.container').addClass('shifted');
+    });
+
+    // Evento de clique no ícone do menu flutuante
+    $('.menu-toggle').on('click', function() {
+        $('.sidebar').removeClass('hidden');
+        $(this).addClass('hidden');
+        $('.container').removeClass('shifted');
+    });
+
     loadData();
 });

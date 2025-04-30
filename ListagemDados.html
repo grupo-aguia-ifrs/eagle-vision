@@ -9,8 +9,37 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
+    
+    <div class="menu-toggle hidden">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Menu</span>
+            <button class="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-user">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="sidebar-options">
+            <button class="sidebar-btn"><i class="fa-solid fa-camera"></i></button>
+            <button class="sidebar-btn"><i class="fas fa-bell"></i></button>
+        </div>
+        <div class="sidebar-footer">
+            <button class="sidebar-exit">Sair</button>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>Listagem de Dados</h1>
+        <div class="search-bar-wrapper">
+            <div class="search-input-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-bar" placeholder="Pesquisar...">
+            </div>
+        </div>
         <table>
             <thead>
                 <tr>

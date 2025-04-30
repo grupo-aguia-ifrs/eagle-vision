@@ -1,0 +1,34 @@
+name: Proteção da branch main
+enforcement: active
+conditions:
+  ref_name:
+    include:
+      - main
+rules:
+  - type: pull_request
+    parameters:
+      required_approving_review_count: 1
+      require_code_owner_review: true
+      dismiss_stale_reviews_on_push: true
+      restrict_review_dismissal:
+        enabled: false
+  - type: required_status_checks
+    parameters:
+      strict: false
+      contexts: []
+  - type: non_fast_forward
+    parameters:
+      enabled: true
+  - type: linear_history
+    parameters:
+      enabled: true
+  - type: commit_message_pattern
+    parameters:
+      pattern: ""
+      negate: false
+  - type: push_restrictions
+    parameters:
+      actor_ids:
+        - "@grupo-aguia-ifrs/ceo"
+        - "@grupo-aguia-ifrs/po"
+        - "@grupo-aguia-ifrs/qa"
