@@ -1,7 +1,8 @@
 /* Fundo geral da página */
 body {
-    background-color: #040A47; /* cor solicitada */
-  }
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #040A47;
+}
   
   /* Container de login */
   .login-container {
