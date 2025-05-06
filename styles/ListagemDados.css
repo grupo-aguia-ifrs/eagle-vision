@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "JetBrains Mono", monospace;
 }
 
 body {
@@ -67,6 +69,7 @@ tr:hover {
     display: flex;
     gap: 1rem;
     justify-content: center;
+    padding-top: 20px;
 }
 
 .icon {
@@ -76,10 +79,21 @@ tr:hover {
     transition: all 0.2s ease;
 }
 
-.icon.active {
-    color: #4a5568;
+.icon.camera.active {
+    color: #C9220C;
 }
 
+.icon.alarm.active {
+    color: #333;
+}
+
+.sidebar-btn.alarm.active {
+    color: #333; /* Novo valor para filtro de alarme ativo na sidebar */
+}
+
+.sidebar-btn.camera.active{
+    color: #C9220C;
+}
 .pagination {
     display: flex;
     justify-content: flex-end;
@@ -271,4 +285,11 @@ tr:hover {
 
 .sidebar-toggle:hover {
     transform: scale(1.1);
+}
+
+.no-results {
+    text-align: center;
+    padding: 30px;
+    color: #7f8c8d;
+    font-style: italic;
 }

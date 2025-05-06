@@ -3,6 +3,11 @@ $(document).ready(function() {
     let currentPage = 1;
     let totalItems = 0;
     let totalPages = 0;
+    let activeFilters = {
+        search: '',
+        camera: false,
+        alarm: false
+    };
 
     // Dados estáticos
     const dados = [
@@ -23,33 +28,68 @@ $(document).ready(function() {
         { id: '015', nome: 'Gf Pneus', status: { camera: true, alarm: true} }
     ];
 
+    // Função para filtrar os dados
+    function filterData() {
+        return dados.filter(item => {
+            // Filtro de pesquisa
+            const matchesSearch = item.id.toLowerCase().includes(activeFilters.search.toLowerCase()) || 
+                                  item.nome.toLowerCase().includes(activeFilters.search.toLowerCase());
+            
+            // Filtro de câmera
+            const matchesCamera = !activeFilters.camera || item.status.camera;
+            
+            // Filtro de alarme
+            const matchesAlarm = !activeFilters.alarm || item.status.alarm;
+            
+            return matchesSearch && matchesCamera && matchesAlarm;
+        });
+    }
+
     // Função para carregar os dados
     function loadData() {
-        totalItems = dados.length;
+        const filteredData = filterData();
+        totalItems = filteredData.length;
         totalPages = Math.ceil(totalItems / itemsPerPage);
-        displayData();
+        
+        // Reset para a primeira página se a página atual não existir mais
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        } else if (totalPages === 0) {
+            currentPage = 1;
+        }
+        
+        displayData(filteredData);
         updatePagination();
     }
 
     // Função para exibir os dados
-    function displayData() {
+    function displayData(data) {
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-        const pageData = dados.slice(start, end);
+        const pageData = data.slice(start, end);
 
         $('tbody').empty();
-        pageData.forEach(item => {
+        
+        if (pageData.length === 0) {
             $('tbody').append(`
                 <tr>
-                    <td>${item.id}</td>
-                    <td>${item.nome}</td>
-                    <td class="icon-cell">
-                        <i class="fa-solid fa-camera icon camera ${item.status.camera ? 'active' : ''}"></i>
-                        <i class="fas fa-bell icon alarm ${item.status.alarm ? 'active' : ''}"></i>
-                    </td>
+                    <td colspan="3" class="no-results">Nenhum cliente encontrado</td>
                 </tr>
             `);
-        });
+        } else {
+            pageData.forEach(item => {
+                $('tbody').append(`
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.nome}</td>
+                        <td class="icon-cell">
+                            <i class="fa-solid fa-camera icon camera ${item.status.camera ? 'active' : ''}"></i>
+                            <i class="fas fa-bell icon alarm ${item.status.alarm ? 'active' : ''}"></i>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
     }
 
     // Função para atualizar a paginação
@@ -64,9 +104,31 @@ $(document).ready(function() {
         }
 
         // Números das páginas
-        for (let i = 1; i <= totalPages; i++) {
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        if (startPage > 1) {
+            $('.pagination').append(`
+                <button class="page-number">1</button>
+                ${startPage > 2 ? '<span>...</span>' : ''}
+            `);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
             $('.pagination').append(`
                 <button class="page-number ${i === currentPage ? 'active' : ''}">${i}</button>
+            `);
+        }
+
+        if (endPage < totalPages) {
+            $('.pagination').append(`
+                ${endPage < totalPages - 1 ? '<span>...</span>' : ''}
+                <button class="page-number">${totalPages}</button>
             `);
         }
 
@@ -81,29 +143,37 @@ $(document).ready(function() {
     // Eventos de clique na paginação
     $(document).on('click', '.page-number', function() {
         currentPage = parseInt($(this).text());
-        displayData();
-        updatePagination();
+        loadData();
     });
 
     $(document).on('click', '.prev-page', function() {
         if (currentPage > 1) {
             currentPage--;
-            displayData();
-            updatePagination();
+            loadData();
         }
     });
 
     $(document).on('click', '.next-page', function() {
         if (currentPage < totalPages) {
             currentPage++;
-            displayData();
-            updatePagination();
+            loadData();
         }
     });
 
-    // Evento de clique nos ícones
-    $(document).on('click', '.icon', function() {
+    // Evento de pesquisa em tempo real
+    $('.search-bar').on('input', function() {
+        activeFilters.search = $(this).val();
+        currentPage = 1; // Reset para a primeira página ao pesquisar
+        loadData();
+    });
+
+    // Evento de clique nos filtros da sidebar
+    $('.sidebar-btn.camera, .sidebar-btn.alarm').on('click', function() {
+        const filterType = $(this).data('filter');
+        activeFilters[filterType] = !activeFilters[filterType];
         $(this).toggleClass('active');
+        currentPage = 1; // Reset para a primeira página ao filtrar
+        loadData();
     });
 
     // Evento de clique no ícone do menu dentro do sidebar
@@ -120,5 +190,6 @@ $(document).ready(function() {
         $('.container').removeClass('shifted');
     });
 
+    // Carregar dados iniciais
     loadData();
 });
