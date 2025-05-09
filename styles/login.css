@@ -1,0 +1,68 @@
+/* Fundo geral da página */
+body {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: #040A47;
+  }
+    
+    /* Container de login */
+    .login-container {
+      width: 320px;
+      padding: 40px;
+      border: 2px solid #ffffff;
+      border-radius: 20px;
+      text-align: center;
+    }
+    
+    /* Ícone grande acima */
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      margin: 0 auto 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon-circle i {
+      font-size: 30px;
+      color: #ffffff;
+    }
+    
+    /* Inputs */
+    .form-control {
+      background: transparent;
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+    
+    .form-control::placeholder {
+      color: #ffffff;
+    }
+    
+    .form-control:focus {
+      background: transparent;
+      color: #ffffff;
+      border-color: #ffffff;
+      box-shadow: none;
+    }
+    
+    /* Ícones nos campos */
+    .input-group-text {
+      background: transparent;
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+    
+    /* Botão */
+    .btn-outline-primary {
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: #ffffff;
+      color: #1a56db;
+    }
+    

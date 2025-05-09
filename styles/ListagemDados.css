@@ -293,3 +293,10 @@ tr:hover {
     color: #7f8c8d;
     font-style: italic;
 }
+
+.clickable-row {
+    cursor: pointer;
+}
+.clickable-row:hover {
+    background-color: #f0f0f0;
+}

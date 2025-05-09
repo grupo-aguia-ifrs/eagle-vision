@@ -79,7 +79,7 @@ $(document).ready(function() {
         } else {
             pageData.forEach(item => {
                 $('tbody').append(`
-                    <tr>
+                    <tr class="clickable-row" data-id="${item.id}">
                         <td>${item.id}</td>
                         <td>${item.nome}</td>
                         <td class="icon-cell">
@@ -188,6 +188,24 @@ $(document).ready(function() {
         $('.sidebar').removeClass('hidden');
         $(this).addClass('hidden');
         $('.container').removeClass('shifted');
+    });
+
+    $(document).on('click', '.clickable-row', function() {
+        const id = $(this).data('id');
+        console.log(id);
+
+        $('#modalDescricao').modal('show')
+    });
+
+    $(document).on('click', '#togglePassword', function () {
+        const $password = $('#passwordText');
+        const $icon = $(this);
+        
+        const isHidden = $password.text().includes('*');
+    
+        // Aqui você troca os valores fixos como quiser
+        $password.text(isHidden ? 'minhasenha123' : '********');
+        $icon.toggleClass('fa-eye-slash fa-eye');
     });
 
     // Carregar dados iniciais
