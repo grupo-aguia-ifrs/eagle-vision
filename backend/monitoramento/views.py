@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import CFTV
+from .serializers import CFTVSerializer
 
-# Create your views here.
+class CFTVViewSet(viewsets.ModelViewSet):
+    queryset = CFTV.objects.all()
+    serializer_class = CFTVSerializer
