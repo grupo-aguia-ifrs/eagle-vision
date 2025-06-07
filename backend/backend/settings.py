@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'cliente',
     'rest_framework',
     'alarme',
-    'monitoramento'
+    'monitoramento',
     
 ]
 
