@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'alarme',
     'monitoramento',
-    
+    'cameras',
+    'usuario',
 ]
 
 MIDDLEWARE = [
