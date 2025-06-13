@@ -24,20 +24,27 @@ $(document).on('click', '#togglePassword', function () {
     //   }
     // });
 
+
     $.ajax({
       type: "POST",
-      url: "http://127.0.0.1:8000/api/login/", // ← Isso aqui tem que bater certinho
+      url: "http://127.0.0.1:8000/api/login/",
       data: {
         usuario: email,
         senha: senha
       },
       success: function(resposta) {
+        console.log("Resposta da API:", resposta);
         if (resposta.success) {
           window.location.href = "ListagemDados.html";
         } else {
           alert(resposta.message);
         }
+      },
+      error: function(xhr, status, error) {
+        console.error("Erro na requisição:", error);
+        console.log("Resposta completa:", xhr.responseText);
       }
+
     });
 
     console.log('Email:', email);
