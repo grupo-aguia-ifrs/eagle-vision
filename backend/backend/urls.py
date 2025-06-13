@@ -22,5 +22,6 @@ urlpatterns = [
     path('api/', include('monitoramento.urls')),
     path('api/', include('cliente.urls')),
     path('api/', include('alarme.urls')),
-    path('api/', include('cameras.urls'))
+    path('api/', include('cameras.urls')),
+    path('api/', include('usuario.urls')),
 ]
