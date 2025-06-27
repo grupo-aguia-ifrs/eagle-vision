@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    let clientesData = [];
+    let cftvData = [];
     const itemsPerPage = 10;
     let currentPage = 1;
     let totalItems = 0;
@@ -9,49 +11,74 @@ $(document).ready(function() {
         alarm: false
     };
 
-    // Dados estáticos
-    const dados = [
-        { id: '001', nome: 'Ferreira Lanches', status: { camera: false, alarm: false } },
-        { id: '002', nome: 'Neltis Burger', status: { camera: true, alarm: false } },
-        { id: '003', nome: 'Coprel Telecom', status: { camera: false, alarm: true } },
-        { id: '004', nome: 'Indutar', status: { camera: true, alarm: true } },
-        { id: '005', nome: 'Vence Tudo', status: { camera: false, alarm: false } },
-        { id: '006', nome: 'AGCO', status: { camera: false, alarm: false } },
-        { id: '007', nome: 'Casa do Chimarrão', status: { camera: true, alarm: false } },
-        { id: '008', nome: 'Amisa', status: { camera: false, alarm: true } },
-        { id: '009', nome: 'Lojão do Kiko', status: { camera: true, alarm: false } },
-        { id: '010', nome: 'Oba Oba', status: { camera: false, alarm: false } },
-        { id: '011', nome: 'IFRS', status: { camera: true, alarm: false } },
-        { id: '012', nome: 'Geatel', status: { camera: false, alarm: true } },
-        { id: '013', nome: 'Cachorrão do Tarcisio', status: { camera: true, alarm: false } },
-        { id: '014', nome: 'Jotag', status: { camera: false, alarm: false } },
-        { id: '015', nome: 'Gf Pneus', status: { camera: true, alarm: true} }
-    ];
+    // Função para buscar clientes
+    async function fetchClientes() {
+        try {
+            const response = await fetch('http://localhost:8000/api/cliente/');
+            if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao buscar clientes:', error);
+            return [];
+        }
+    }
+
+    // Função para buscar CFTVs
+    async function fetchCftvs() {
+        try {
+            const response = await fetch('http://localhost:8000/api/cftvs/');
+            if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao buscar CFTVs:', error);
+            return [];
+        }
+    }
 
     // Função para filtrar os dados
-    function filterData() {
-        return dados.filter(item => {
+    function filterData(data) {
+        return data.filter(item => {
             // Filtro de pesquisa
-            const matchesSearch = item.id.toLowerCase().includes(activeFilters.search.toLowerCase()) || 
-                                  item.nome.toLowerCase().includes(activeFilters.search.toLowerCase());
+            const matchesSearch = item.codigo.toLowerCase().includes(activeFilters.search.toLowerCase()) || 
+                                (item.nome_fantasia || '').toLowerCase().includes(activeFilters.search.toLowerCase());
             
-            // Filtro de câmera
-            const matchesCamera = !activeFilters.camera || item.status.camera;
-            
-            // Filtro de alarme
-            const matchesAlarm = !activeFilters.alarm || item.status.alarm;
+            // Como não temos status na API, vamos ignorar esses filtros por enquanto
+            const matchesCamera = !activeFilters.camera;
+            const matchesAlarm = !activeFilters.alarm;
             
             return matchesSearch && matchesCamera && matchesAlarm;
         });
     }
 
+    // Função para exibir os dados na tabela
+    function displayData(data) {
+        $('tbody').empty();
+        if (!data || data.length === 0) {
+            $('tbody').append('<tr><td colspan="3">Nenhum cliente encontrado</td></tr>');
+        } else {
+            data.forEach(item => {
+                $('tbody').append(`
+                    <tr>
+                        <td>${item.codigo || ''}</td>
+                        <td class="clickable-row" data-id="${item.id}">${item.nome_fantasia || ''}</td>
+                        <td class="icon-cell">
+                            <i class="fa-solid fa-camera icon camera"></i>
+                            <i class="fas fa-bell icon alarm"></i>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+    }
+
     // Função para carregar os dados
-    function loadData() {
-        const filteredData = filterData();
+    async function loadData() {
+        clientesData = await fetchClientes();
+        cftvData = await fetchCftvs();
+        const filteredData = filterData(clientesData);
         totalItems = filteredData.length;
         totalPages = Math.ceil(totalItems / itemsPerPage);
         
-        // Reset para a primeira página se a página atual não existir mais
         if (currentPage > totalPages && totalPages > 0) {
             currentPage = totalPages;
         } else if (totalPages === 0) {
@@ -60,36 +87,6 @@ $(document).ready(function() {
         
         displayData(filteredData);
         updatePagination();
-    }
-
-    // Função para exibir os dados
-    function displayData(data) {
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const pageData = data.slice(start, end);
-
-        $('tbody').empty();
-        
-        if (pageData.length === 0) {
-            $('tbody').append(`
-                <tr>
-                    <td colspan="3" class="no-results">Nenhum cliente encontrado</td>
-                </tr>
-            `);
-        } else {
-            pageData.forEach(item => {
-                $('tbody').append(`
-                    <tr class="clickable-row" data-id="${item.id}">
-                        <td>${item.id}</td>
-                        <td>${item.nome}</td>
-                        <td class="icon-cell">
-                            <i class="fa-solid fa-camera icon camera ${item.status.camera ? 'active' : ''}"></i>
-                            <i class="fas fa-bell icon alarm ${item.status.alarm ? 'active' : ''}"></i>
-                        </td>
-                    </tr>
-                `);
-            });
-        }
     }
 
     // Função para atualizar a paginação
@@ -190,11 +187,36 @@ $(document).ready(function() {
         $('.container').removeClass('shifted');
     });
 
+    // Evento de clique apenas no nome fantasia para abrir o modal e preencher os dados
     $(document).on('click', '.clickable-row', function() {
         const id = $(this).data('id');
-        console.log(id);
+        const cliente = clientesData.find(c => c.id === id);
+        const cftv = cftvData.find(c => c.cliente === id);
 
-        $('#modalDescricao').modal('show')
+        if (cliente) {
+            $("#modal-nome-fantasia").html(`Nome fantasia: <strong>${cliente.nome_fantasia}</strong>`);
+            $("#modal-codigo").html(`Código: <strong>${cliente.codigo}</strong>`);
+            $("#modal-nome-responsavel").html(`Nome completo do responsável: <strong>${cliente.nome_responsavel || ''}</strong>`);
+            $("#modal-telefone-responsavel").html(`Telefone do responsável: <strong>${cliente.telefone_responsavel || ''}</strong>`);
+        }
+
+        if (cftv) {
+            $("#modal-modelo-cftv").html(`Modelo da câmera: <strong>${cftv.modelo_cftv || ''}</strong>`);
+            $("#modal-ip-cftv").html(`IP cadastrado: <strong>${cftv.ip_externo || ''}</strong>`);
+            $("#modal-cloud-cftv").html(`Cloud do NVR: <strong>${cftv.cloud_cftv || ''}</strong>`);
+            $("#modal-usuario-cftv").html(`Usuário cadastrado: <strong>${cftv.grup_pessoas || ''}</strong>`);
+            // $("#modal-senha-cftv").html(`Senha de acesso: <strong>${cftv.senha || ''}</strong>`); // Se quiser preencher senha
+            // $("#modal-qtd-cftv").html(`Quantidade de câmeras instaladas: <strong>${cftv.qtd_cameras || ''}</strong>`); // Se quiser preencher quantidade
+        } else {
+            $("#modal-modelo-cftv").html(`Modelo da câmera: <strong></strong>`);
+            $("#modal-ip-cftv").html(`IP cadastrado: <strong></strong>`);
+            $("#modal-cloud-cftv").html(`Cloud do NVR: <strong></strong>`);
+            $("#modal-usuario-cftv").html(`Usuário cadastrado: <strong></strong>`);
+            // $("#modal-senha-cftv").html(`Senha de acesso: <strong></strong>`);
+            // $("#modal-qtd-cftv").html(`Quantidade de câmeras instaladas: <strong></strong>`);
+        }
+
+        $('#modalDescricao').modal('show');
     });
 
     $(document).on('click', '#togglePassword', function () {
@@ -211,3 +233,5 @@ $(document).ready(function() {
     // Carregar dados iniciais
     loadData();
 });
+
+    
