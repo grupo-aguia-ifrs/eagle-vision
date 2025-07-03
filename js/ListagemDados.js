@@ -1,6 +1,8 @@
 $(document).ready(function() {
     let clientesData = [];
     let cftvData = [];
+    let alarmeData = [];
+    let camerasData = [];
     const itemsPerPage = 10;
     let currentPage = 1;
     let totalItems = 0;
@@ -35,6 +37,30 @@ $(document).ready(function() {
         }
     }
 
+    // Função para buscar alarmes
+    async function fetchAlarmes() {
+        try {
+            const response = await fetch('http://localhost:8000/api/alarmes/');
+            if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao buscar alarmes:', error);
+            return [];
+        }
+    }
+
+    // Função para buscar Câmeras
+    async function fetchCameras() {
+        try {
+            const response = await fetch('http://localhost:8000/api/cameras/');
+            if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao buscar Câmeras:', error);
+            return [];
+        }
+    }
+
     // Função para filtrar os dados
     function filterData(data) {
         return data.filter(item => {
@@ -42,9 +68,10 @@ $(document).ready(function() {
             const matchesSearch = item.codigo.toLowerCase().includes(activeFilters.search.toLowerCase()) || 
                                 (item.nome_fantasia || '').toLowerCase().includes(activeFilters.search.toLowerCase());
             
-            // Como não temos status na API, vamos ignorar esses filtros por enquanto
-            const matchesCamera = !activeFilters.camera;
-            const matchesAlarm = !activeFilters.alarm;
+            // Filtro de câmera ativa
+            const matchesCamera = !activeFilters.camera || cftvData.some(c => c.cliente === item.id);
+            // Filtro de alarme ativo
+            const matchesAlarm = !activeFilters.alarm || alarmeData.some(a => a.id_cliente === item.id);
             
             return matchesSearch && matchesCamera && matchesAlarm;
         });
@@ -57,13 +84,16 @@ $(document).ready(function() {
             $('tbody').append('<tr><td colspan="3">Nenhum cliente encontrado</td></tr>');
         } else {
             data.forEach(item => {
+                // Verifica se existe CFTV e Alarme para o cliente
+                const cftvAtivo = cftvData.some(c => c.cliente === item.id);
+                const alarmeAtivo = alarmeData.some(a => a.id_cliente === item.id);
                 $('tbody').append(`
                     <tr>
                         <td>${item.codigo || ''}</td>
                         <td class="clickable-row" data-id="${item.id}">${item.nome_fantasia || ''}</td>
                         <td class="icon-cell">
-                            <i class="fa-solid fa-camera icon camera"></i>
-                            <i class="fas fa-bell icon alarm"></i>
+                            <i class="fa-solid fa-camera icon camera${cftvAtivo ? ' active' : ''}"></i>
+                            <i class="fas fa-bell icon alarm${alarmeAtivo ? ' active' : ''}"></i>
                         </td>
                     </tr>
                 `);
@@ -75,6 +105,8 @@ $(document).ready(function() {
     async function loadData() {
         clientesData = await fetchClientes();
         cftvData = await fetchCftvs();
+        alarmeData = await fetchAlarmes();
+        camerasData = await fetchCameras();
         const filteredData = filterData(clientesData);
         totalItems = filteredData.length;
         totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -192,6 +224,7 @@ $(document).ready(function() {
         const id = $(this).data('id');
         const cliente = clientesData.find(c => c.id === id);
         const cftv = cftvData.find(c => c.cliente === id);
+        const alarme = alarmeData.find(a => a.id_cliente === id);
 
         if (cliente) {
             $("#modal-nome-fantasia").html(`Nome fantasia: <strong>${cliente.nome_fantasia}</strong>`);
@@ -205,15 +238,33 @@ $(document).ready(function() {
             $("#modal-ip-cftv").html(`IP cadastrado: <strong>${cftv.ip_externo || ''}</strong>`);
             $("#modal-cloud-cftv").html(`Cloud do NVR: <strong>${cftv.cloud_cftv || ''}</strong>`);
             $("#modal-usuario-cftv").html(`Usuário cadastrado: <strong>${cftv.grup_pessoas || ''}</strong>`);
-            // $("#modal-senha-cftv").html(`Senha de acesso: <strong>${cftv.senha || ''}</strong>`); // Se quiser preencher senha
-            // $("#modal-qtd-cftv").html(`Quantidade de câmeras instaladas: <strong>${cftv.qtd_cameras || ''}</strong>`); // Se quiser preencher quantidade
+            // Buscar senha da primeira câmera do cliente
+            const camerasDoCliente = camerasData.filter(cam => cam.cftv === id);
+            const senha = camerasDoCliente.length > 0 ? camerasDoCliente[0].senha : '';
+            $("#passwordText").text('********').data('senha', senha || '');
+            $('#togglePassword').removeClass('fa-eye').addClass('fa-eye-slash');
+            // Preencher quantidade de câmeras
+            const qtdCameras = camerasDoCliente.length;
+            $("#modal-qtd-cftv").html(`Quantidade de câmeras instaladas: <strong>${qtdCameras}</strong>`);
         } else {
             $("#modal-modelo-cftv").html(`Modelo da câmera: <strong></strong>`);
             $("#modal-ip-cftv").html(`IP cadastrado: <strong></strong>`);
             $("#modal-cloud-cftv").html(`Cloud do NVR: <strong></strong>`);
             $("#modal-usuario-cftv").html(`Usuário cadastrado: <strong></strong>`);
-            // $("#modal-senha-cftv").html(`Senha de acesso: <strong></strong>`);
-            // $("#modal-qtd-cftv").html(`Quantidade de câmeras instaladas: <strong></strong>`);
+            $("#passwordText").text('********').data('senha', '');
+            $('#togglePassword').removeClass('fa-eye').addClass('fa-eye-slash');
+            $("#modal-qtd-cftv").html(`Quantidade de câmeras instaladas: <strong></strong>`);
+        }
+
+        // Preencher campos do alarme
+        if (alarme) {
+            $("#modal-modelo-alarme").html(`Modelo da central: <strong>${alarme.modelo_central || ''}</strong>`);
+            $("#modal-sensores-alarme").html(`Sensores instalados: <strong>${alarme.sensores_instalados || ''}</strong>`);
+            $("#modal-usuarios-alarme").html(`Usuários cadastrados na central: <strong>${(alarme.grup_pessoas || '').replace(/\n/g, ' ')}</strong>`);
+        } else {
+            $("#modal-modelo-alarme").html(`Modelo da central: <strong></strong>`);
+            $("#modal-sensores-alarme").html(`Sensores instalados: <strong></strong>`);
+            $("#modal-usuarios-alarme").html(`Usuários cadastrados na central: <strong></strong>`);
         }
 
         $('#modalDescricao').modal('show');
@@ -222,16 +273,26 @@ $(document).ready(function() {
     $(document).on('click', '#togglePassword', function () {
         const $password = $('#passwordText');
         const $icon = $(this);
-        
+        const senhaReal = $password.data('senha') || '';
         const isHidden = $password.text().includes('*');
-    
-        // Aqui você troca os valores fixos como quiser
-        $password.text(isHidden ? 'minhasenha123' : '********');
-        $icon.toggleClass('fa-eye-slash fa-eye');
+        if (isHidden) {
+            $password.text(senhaReal);
+            $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        } else {
+            $password.text('********');
+            $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        }
     });
+
+    let logoutButton = $('#logoutButton');
+    if (logoutButton.length) {
+        logoutButton.on('click', function() {
+            window.location.href = 'TelaInicial.html';
+        });
+    } else {
+        console.error("Botão #logoutButton NÃO encontrado. Verifique o ID no HTML.");
+    }
 
     // Carregar dados iniciais
     loadData();
 });
-
-    
