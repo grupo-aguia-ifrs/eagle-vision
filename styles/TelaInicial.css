@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "JetBrains Mono", monospace;
+}
+
+body, html {
+    background-color: #040A47 !important;
+}
+
+    /* Botão */
+        .sidebar-exit {
+            background: #fff;
+            border: 2px solid #bfc4c9;
+            border-radius: 8px;
+            padding: 6px 18px;
+            color: #6b7280;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border 0.2s;
+            font-size: 1rem;
+        }
+
+        .sidebar img {
+            width: 80px;
+            margin: 30px 0 18px -10px;
+        }
+
+        .sidebar footer {
+            margin-top: auto;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 120px;
+            height: 100vh;
+            background: rgba(217, 217, 217, 0.95);
+            box-shadow: 2px 0 8px rgba(0,0,0,0.07);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1000;
+            border-top-right-radius: 18px;
+            border-bottom-right-radius: 18px;
+            transition: all 0.3s ease;
+            justify-content: space-between;
+            padding: 18px 0;
+        }
+
+        .sidebar-exit:hover {
+            background-color: #f0f0f0;
+            border-color: #a0a6ad;
+            color: #4a5568;
+        }
+
+        .sidebar-btn {
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 7px;
+            border-radius: 8px;
+            transition: color 0.2s;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+        }
+
+        .sidebar-options {
+            margin: 22px 0 18px 0;
+            font-size: 1.3rem;
+            color: #4a5568;
+        }
+
+        .logo-container {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .logo-grande {
+            width: 400px;
+            opacity: 0.1;
+        }
+
+        .logo-text {
+            font-family: 'JetBrains Mono', monospace;
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 0.2rem;
+            margin-left: 0px;
+            margin-right: 0;
+            margin-bottom: 0;
+            opacity: 0.1;
+        }
+
+        .icon-cell {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            padding-top: 20px;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #bfc4c9;
+            transition: all 0.2s ease;
+        }

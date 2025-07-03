@@ -35,7 +35,7 @@ $(document).on('click', '#togglePassword', function () {
       success: function(resposta) {
         console.log("Resposta da API:", resposta);
         if (resposta.success) {
-          window.location.href = "ListagemDados.html";
+          window.location.href = "TelaInicial.html";
         } else {
           alert(resposta.message);
         }
