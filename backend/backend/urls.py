@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +27,10 @@ urlpatterns = [
     path('api/', include('alarme.urls')),
     path('api/', include('cameras.urls')),
     path('api/', include('usuario.urls')),
+
+    # Para uma página HTML específica (ex: login.html dentro de static)
+    path('', TemplateView.as_view(template_name='login.html'), name='home'),
 ]
+
+# Para servir arquivos estáticos durante o desenvolvimento
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

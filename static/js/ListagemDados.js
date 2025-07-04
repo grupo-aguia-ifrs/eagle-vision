@@ -16,7 +16,7 @@ $(document).ready(function() {
     // Função para buscar clientes
     async function fetchClientes() {
         try {
-            const response = await fetch('http://localhost:8000/api/cliente/');
+            const response = await fetch('http://localhost:8000/api/cliente');
             if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
             return await response.json();
         } catch (error) {
