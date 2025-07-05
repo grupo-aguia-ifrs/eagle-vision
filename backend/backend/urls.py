@@ -19,6 +19,12 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import render
+
+
+def login_view(request):
+    return render(request, 'api/login.html')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +33,8 @@ urlpatterns = [
     path('api/', include('alarme.urls')),
     path('api/', include('cameras.urls')),
     path('api/', include('usuario.urls')),
+   # path('', login_view, name='login'),
+   # path('home/', tela_inicial, name='home')
 
     # Para uma página HTML específica (ex: login.html dentro de static)
     path('', TemplateView.as_view(template_name='login.html'), name='home'),

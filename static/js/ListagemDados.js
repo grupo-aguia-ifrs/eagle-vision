@@ -16,7 +16,7 @@ $(document).ready(function() {
     // Função para buscar clientes
     async function fetchClientes() {
         try {
-            const response = await fetch('http://localhost:8000/api/cliente');
+            const response = await fetch('/api/cliente');
             if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
             return await response.json();
         } catch (error) {
@@ -28,7 +28,7 @@ $(document).ready(function() {
     // Função para buscar CFTVs
     async function fetchCftvs() {
         try {
-            const response = await fetch('http://localhost:8000/api/cftvs/');
+            const response = await fetch('/api/cftvs/');
             if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
             return await response.json();
         } catch (error) {
@@ -40,7 +40,7 @@ $(document).ready(function() {
     // Função para buscar alarmes
     async function fetchAlarmes() {
         try {
-            const response = await fetch('http://localhost:8000/api/alarmes/');
+            const response = await fetch('/api/alarmes/');
             if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
             return await response.json();
         } catch (error) {
@@ -52,7 +52,7 @@ $(document).ready(function() {
     // Função para buscar Câmeras
     async function fetchCameras() {
         try {
-            const response = await fetch('http://localhost:8000/api/cameras/');
+            const response = await fetch('/api/cameras/');
             if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
             return await response.json();
         } catch (error) {
@@ -287,7 +287,7 @@ $(document).ready(function() {
     let logoutButton = $('#logoutButton');
     if (logoutButton.length) {
         logoutButton.on('click', function() {
-            window.location.href = 'TelaInicial.html';
+            window.location.href = '/static/TelaInicial.html';
         });
     } else {
         console.error("Botão #logoutButton NÃO encontrado. Verifique o ID no HTML.");

@@ -27,15 +27,16 @@ $(document).on('click', '#togglePassword', function () {
 
     $.ajax({
       type: "POST",
-      url: "http://127.0.0.1:8000/api/login/",
+      url: "http://" + window.location.hostname + ":8000/api/login/",
       data: {
         usuario: email,
         senha: senha
       },
+      contentType: "application/x-www-form-urlencoded",
       success: function(resposta) {
         console.log("Resposta da API:", resposta);
         if (resposta.success) {
-          window.location.href = "TelaInicial.html";
+          window.location.href = "/static/TelaInicial.html";
         } else {
           alert(resposta.message);
         }
